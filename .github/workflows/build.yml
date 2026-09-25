@@ -1,4 +1,4 @@
-name: Build FamilyVault APK
+name: Build FamilyVault Android APK
 
 on:
   push:
@@ -7,23 +7,57 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-android:
-    name: Build FamilyVault Android APK
-    runs-on: ubuntu-latest
+  build:
+    name: Build FamilyVault APK
+    runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout
+
+      - name: Checkout FamilyVault
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          command: buildozer android debug
-          buildozer_version: stable
+          python-version: "3.12"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git \
+            zip \
+            unzip \
+            openjdk-17-jdk \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo6 \
+            cmake \
+            libffi-dev \
+            libssl-dev \
+            automake
+
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade buildozer setuptools
+
+      - name: Build APK
+        run: |
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FamilyVault-APK
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
