@@ -1,33 +1,26 @@
-name: Build APK
+name: Build FamilyVault APK
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: - main
+  workflow_disptach:
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout FamilyVault
       uses: actions/checkout@v4
 
-    - name: Get Buildozer Cache
-      uses: actions/cache@v4
-      with:
-        path: ./.buildozer
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
-
-    - name: Build with Buildozer
-      uses: ArtemGovorov/buildozer-action@v1
+    - name: Build APK with Buildozer
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
       with:
         command: buildozer android debug
-        repository_root: .
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: FamilyVault-APK
-        path: bin/*.apk    
+        path: ${{steps.buildozer.outputs.filename}}  
