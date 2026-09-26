@@ -79,7 +79,9 @@ jobs:
 
       - name: Build APK
         run: |
-          buildozer android debug
+          # Disable grp and pwd modules before build
+          export P4A_SKIP_MODULES="grp,pwd"
+          buildozer android debug      
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
