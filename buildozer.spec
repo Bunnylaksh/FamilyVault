@@ -39,3 +39,5 @@ android.blacklist_modules = grp
 p4a.url = https://github.com/kivy/python-for-android.git
 p4a.fork = kivy
 p4a.branch = v2026.05.09
+
+p4a.configure_args = ac_cv_func_getgrouplist=no ac_cv_func_initgroups=no
