@@ -78,9 +78,21 @@ jobs:
           rm -rf bin
 
       - name: Build APK
+        shell: bash
         run: |
-          # Disable grp and pwd modules before build
-          export P4A_SKIP_MODULES="grp,pwd"
+          set -euo pipefail
+      
+          # Android/Bionic has grp.h but does not implement these POSIX APIs.
+          # Tell CPython's configure step not to build the grp extension.
+          cat > "$GITHUB_WORKSPACE/android.config.site" <<'EOF'
+          ac_cv_header_grp_h=no
+          ac_cv_func_setgrent=no
+          ac_cv_func_getgrent=no
+          ac_cv_func_endgrent=no
+          EOF
+      
+          export CONFIG_SITE="$GITHUB_WORKSPACE/android.config.site"
+          
           buildozer android debug      
 
       - name: Upload APK
