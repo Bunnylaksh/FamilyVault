@@ -29,26 +29,27 @@ jobs:
 
       - name: Install system dependencies
         run: |
-            sudo apt update
-            sudo apt install -y \
-              git \
-              zip \
-              unzip \
-              openjdk-17-jdk \
-              autoconf \
-              automake \
-              libtool \
-              libtool-bin \
-              pkg-config \
-              zlib1g-dev \
-              libncurses-dev \
-              libtinfo6 \
-              cmake \
-              libffi-dev \
-              libssl-dev \
-              autopoint \
-              gettext
-              
+          sudo apt update
+          sudo apt install -y \
+            git \
+            zip \
+            unzip \
+            openjdk-17-jdk \
+            autoconf \
+            automake \
+            libtool \
+            libtool-bin \
+            libltdl-dev \
+            pkg-config \
+            zlib1g-dev \
+            libncurses-dev \
+            libtinfo6 \
+            cmake \
+            libffi-dev \
+            libssl-dev \
+            autopoint \
+            gettext
+
       - name: Prepare autotools
         run: |
           libtoolize --force --copy
@@ -59,7 +60,22 @@ jobs:
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade buildozer setuptools
+          python -m pip install \
+            buildozer==1.6.0 \
+            Cython==0.29.37 \
+            setuptools
+
+      - name: Check build environment
+        run: |
+          python --version
+          buildozer --version
+          python -m pip show buildozer
+          python -m pip show Cython
+
+      - name: Clean Buildozer
+        run: |
+          rm -rf .buildozer
+          rm -rf bin
 
       - name: Build APK
         run: |
