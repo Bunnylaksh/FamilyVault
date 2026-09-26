@@ -23,6 +23,10 @@ android.allow_backup = True
 
 android.accept_sdk_license = True
 
+android.api = 33
+android.miniapi = 24
+android.ndk = 25b
+android.ndk_api =24
 
 # Python for Android
 
