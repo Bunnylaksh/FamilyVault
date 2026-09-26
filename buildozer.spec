@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,db,json
 
 version = 0.1
 
-requirements = python3==3.12.3,hostpython3==3.12.3,kivy==2.3.1,kivymd==2.0.0
+requirements = python3==3.12.0,hostpython3==3.12.0,kivy==2.3.1,kivymd==2.0.0
 
 orientation = portrait
 osx.kivy_version = 2.2.0
