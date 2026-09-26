@@ -28,6 +28,12 @@ android.miniapi = 24
 android.ndk = 25b
 android.ndk_api =24
 
+# In the [app] section, add or modify the android.gradle_dependencies
+android.add_src = Modules/grpmodule.c:skip
+
+# Exclude modules not available on Android
+android.blacklist_modules = grp
+
 # Python for Android
 
 p4a.url = https://github.com/kivy/python-for-android.git
