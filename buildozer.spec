@@ -42,9 +42,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-# Pin Python 3.11 here because p4a otherwise resolves to the latest Python (currently 3.14),
-# which breaks the Android wheel resolution step in CI.
-requirements = python3==3.11,kivy
+requirements = python3==3.12,kivy==2.3.1,kivymd==2.0.0
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -96,6 +94,7 @@ fullscreen = 0
 # (string) Presplash animation using Lottie format.
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
 # for general documentation.
+# Lottie files can be created using various tools, like Adobe After Effect or Synfig.
 #android.presplash_lottie = "path/to/lottie/file.json"
 
 # (str) Adaptive icon of the application (used if Android API level is 26+ at runtime)
@@ -184,7 +183,7 @@ android.accept_sdk_license = True
 # OUYA-ODK/libs/*.jar
 #android.add_jars = foo.jar,bar.jar,path/to/more/*.jar
 
-# (list) Java files to add to the android project (can be java or a
+# (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
 #android.add_src =
 
@@ -204,7 +203,7 @@ android.accept_sdk_license = True
 # android.add_resources = my_icons/all-inclusive.png:drawable/all_inclusive.png
 # 2) A directory, here  'legal_icons' must contain resources of one kind
 # android.add_resources = legal_icons:drawable
-# 3) A directory, here 'legal_resources' must contain one or more directories,
+# 3) A directory, here 'legal_resources' must contain one or more directories, 
 # each of a resource kind:  drawable, xml, etc...
 # android.add_resources = legal_resources
 #android.add_resources =
@@ -223,14 +222,14 @@ android.accept_sdk_license = True
 # android.add_compile_options = "sourceCompatibility = 1.8", "targetCompatibility = 1.8"
 
 # (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
-# please enclose in double quotes
+# please enclose in double quotes 
 # e.g. android.gradle_repositories = "maven { url 'https://repo.spring.io/release' }"
 #android.add_gradle_repositories =
 
 # (list) packaging options to add
 # see https://developer.android.com/reference/tools/gradle-api/7.1/com/android/build/api/dsl/PackagingOptions
 # can be necessary to solve conflicts in gradle_dependencies
-# please enclose in double quotes
+# please enclose in double quotes 
 # e.g. android.add_packaging_options = "exclude 'META-INF/common.kotlin_module'", "exclude 'META-INF/*.kotlin_module'"
 #android.add_packaging_options =
 
@@ -307,7 +306,7 @@ android.allow_backup = True
 # (str) If you need to insert variables into your AndroidManifest.xml file,
 # you can do so with the manifestPlaceholders property.
 # This property takes a map of key-value pairs. (via a string)
-# Usage example : android.manifest_placeholders = [myCustomUrl:"org.kivy.customurl"]
+# Usage example : android.manifest_placeholders = [myCustomUrl:\"org.kivy.customurl\"]
 # android.manifest_placeholders = [:]
 
 # (bool) Skip byte compile for .py files
@@ -367,8 +366,8 @@ android.allow_backup = True
 # (str) extra command line arguments to pass when invoking pythonforandroid.toolchain
 #p4a.extra_args =
 
-#
-#
+
+
 #
 # iOS specific
 #
@@ -393,6 +392,12 @@ ios.codesign.allowed = false
 # Get a list of available identities: buildozer ios list_identities
 #ios.codesign.debug = "iPhone Developer: <lastname> <firstname> (<hexstring>)"
 
+# (str) The development team to use for signing the debug version
+#ios.codesign.development_team.debug = <hexstring>
+
+# (str) Name of the certificate to use for signing the release version
+#ios.codesign.release = %(ios.codesign.debug)s
+
 # (str) The development team to use for signing the release version
 #ios.codesign.development_team.release = <hexstring>
 
@@ -405,12 +410,12 @@ ios.codesign.allowed = false
 # (str) Camera Usage justification string.
 #ios.camera_usage_description = "<App> uses Camera to do <X and Y and Z>"
 
-#
+
 # (bool) Allow StatusBar to be controlled by API
 # ios.viewcontroller_based_statusbar_appearance = False
 
-# (str) A Xml String specifying an extension type.
-#ios.app_extensions = [["7zip", "zip"],  ["public.zip-archive"], "org.kivy.myappextensionfile", "<MyCustom> Extension File", "${MACOSX_BUNDLE_ICON_FILE}", "http://mysite.com/myapp/extensions.html[...]
+# (str) A Xml String specifying a extension type.
+#ios.app_extensions = [["7zip", "zip"],  ["public.zip-archive"], "org.kivy.myappextensionfile", "<MyCustom> Extension File", "${MACOSX_BUNDLE_ICON_FILE}", "http://mysite.com/myapp/extensions.html"],
 
 # (str) URL pointing to .ipa file to be installed
 # This option should be defined along with `display_image_url` and `full_size_image_url` options.
@@ -475,7 +480,7 @@ warn_on_root = 1
 #   file.
 #
 #   Buildozer support overriding options through profiles.
-#   For the example, you want to deploy a demo version of your application without
+#   For example, you want to deploy a demo version of your application without
 #   HD content. You could first change the title to add "(demo)" in the name
 #   and extend the excluded directories to remove the HD content.
 #
@@ -490,4 +495,3 @@ warn_on_root = 1
 #        buildozer --profile demo android debug
 #
 #   Environment variable overrides have priority over profile overrides.
-#
