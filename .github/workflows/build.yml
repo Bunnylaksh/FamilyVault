@@ -81,6 +81,11 @@ jobs:
 
       - name: Build APK
         shell: bash
+        env:
+            ANDROIDNDK: ${{ env.ANDROID_NDK }}
+            ANDROIDAPI: 34
+            ANDROIDMINAPI: 21
+        
         run: |
           set -euo pipefail
 
