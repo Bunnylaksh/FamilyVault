@@ -1,105 +1,97 @@
-name: Build FamilyVault Android APK
+steps:
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  - name: Checkout FamilyVault
+    uses: actions/checkout@v4
 
-jobs:
-  build:
-    name: Build FamilyVault APK
-    runs-on: ubuntu-22.04
+  - name: Set up Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: "3.11.6"
 
-    steps:
+  - name: Set up Java
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: "17"
 
-      - name: Checkout FamilyVault
-        uses: actions/checkout@v4
+  - name: Install system dependencies
+    run: |
+      sudo apt update
+      sudo apt install -y \
+        git \
+        zip \
+        unzip \
+        openjdk-17-jdk \
+        autoconf \
+        automake \
+        libtool \
+        libtool-bin \
+        libltdl-dev \
+        pkg-config \
+        zlib1g-dev \
+        libncurses-dev \
+        libtinfo6 \
+        cmake \
+        libffi-dev \
+        libssl-dev \
+        autopoint \
+        gettext
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11.6"
+  - name: Prepare autotools
+    run: |
+      libtoolize --force --copy
+      autoreconf --version
+      autoconf --version
+      automake --version
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
+  - name: Install Buildozer and toolchain dependencies
+    run: |
+      # Keep pip in the 23.x line to avoid pip API breakage inside python-for-android venvs
+      python -m pip install --upgrade "pip<24" setuptools wheel
+      python -m pip install \
+        buildozer==1.6.0 \
+        Cython==0.29.37
 
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            git \
-            zip \
-            unzip \
-            openjdk-17-jdk \
-            autoconf \
-            automake \
-            libtool \
-            libtool-bin \
-            libltdl-dev \
-            pkg-config \
-            zlib1g-dev \
-            libncurses-dev \
-            libtinfo6 \
-            cmake \
-            libffi-dev \
-            libssl-dev \
-            autopoint \
-            gettext
+  - name: Show pip/python/buildozer versions
+    run: |
+      python --version
+      python -m pip --version
+      python -m pip list --format=columns
+      buildozer --version || true
 
-      - name: Prepare autotools
-        run: |
-          libtoolize --force --copy
-          autoreconf --version
-          autoconf --version
-          automake --version
+  - name: Clean Buildozer
+    run: |
+      rm -rf .buildozer
+      rm -rf bin
 
-      - name: Install Buildozer
-        run: |
-          python -m pip install --upgrade "pip<25"
-          python -m pip install \
-            buildozer==1.6.0 \
-            Cython==0.29.37 \
-            setuptools
-          python -m pip install tea "cup >= 3.0.30"
- 
-      - name: Check build environment
-        run: |
-          python --version
-          buildozer --version
-          python -m pip show buildozer
-          python -m pip show Cython
+  - name: Build APK
+    shell: bash
+    run: |
+      set -euo pipefail
 
-      - name: Clean Buildozer
-        run: |
-          rm -rf .buildozer
-          rm -rf bin
+      # Android/Bionic has grp.h but does not implement these POSIX APIs.
+      # Tell CPython's configure step not to build the grp extension.
+      cat > "$GITHUB_WORKSPACE/android.config.site" <<'EOF'
+      ac_cv_header_grp_h=no
+      ac_cv_func_setgrent=no
+      ac_cv_func_getgrent=no
+      ac_cv_func_endgrent=no
+      ac_cv_func_getgrouplist=no
+      ac_cv_func_initgroups=no
+      EOF
 
-      - name: Build APK
-        shell: bash
-        run: |
-          set -euo pipefail
-      
-          # Android/Bionic has grp.h but does not implement these POSIX APIs.
-          # Tell CPython's configure step not to build the grp extension.
-          cat > "$GITHUB_WORKSPACE/android.config.site" <<'EOF'
-          ac_cv_header_grp_h=no
-          ac_cv_func_setgrent=no
-          ac_cv_func_getgrent=no
-          ac_cv_func_endgrent=no
-          ac_cv_func_getgrouplist=no
-          ac_cv_func_initgroups=no
-          EOF
-      
-          export CONFIG_SITE="$GITHUB_WORKSPACE/android.config.site"
-          
-          buildozer android debug      
+      export CONFIG_SITE="$GITHUB_WORKSPACE/android.config.site"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: FamilyVault-APK
-          path: bin/*.apk
+      # Print environment for debugging
+      echo "ANDROIDNDK=$ANDROIDNDK"
+      echo "ANDROIDAPI=$ANDROIDAPI"
+      echo "ANDROIDMINAPI=$ANDROIDMINAPI"
+
+      # Run buildozer (use -v if you want more logging)
+      buildozer android debug
+
+  - name: Upload APK
+    uses: actions/upload-artifact@v4
+    with:
+      name: FamilyVault-APK
+      path: bin/*.apk
