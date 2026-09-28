@@ -89,6 +89,8 @@ jobs:
           ac_cv_func_setgrent=no
           ac_cv_func_getgrent=no
           ac_cv_func_endgrent=no
+          ac_cv_func_getgrouplist=no
+          ac_cv_func_initgroups=no
           EOF
       
           export CONFIG_SITE="$GITHUB_WORKSPACE/android.config.site"
