@@ -64,7 +64,8 @@ jobs:
             buildozer==1.6.0 \
             Cython==0.29.37 \
             setuptools
-
+          python -m pip install tea "cup >= 3.13"
+ 
       - name: Check build environment
         run: |
           python --version
